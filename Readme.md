@@ -1,14 +1,18 @@
+# Trabajando con Django
+Pequeño manual de primeros pasos para trabajar con Django.
+
 ## crear entorno virtual:
 `python -m venv entorno_virtual`
 
 (-m indica que el comando que se ocupara con Python, trabaja de forma global)
 
 PD: Se recomienda ingresar la carpeta creada "entorno_virtual" dentro de `.gitignore`
+PD2: en `.gitignore` escribir tambien "*__pycache__" para que sin importar dentro de que carpeta se encuentre, ningun pycache se guarde en el repositorio 
 
 ## activar entorno virtual
 [Para Unix] `source entorno_virtual/bin/actívate`
 
-[Para Windows] `. .\entorno\scripts\activate`
+[Para Windows] `. .\entorno_virtual\scripts\activate`
 
 ## Requerimientos del proyecto
 *crear archivo "requirements.txt", dentro de esto puedo ingresar todos los programas que necesito durante el desarrollo del programa. Como por ejemplo:
@@ -47,11 +51,11 @@ Ahora que el servidor está corriendo, puedo entrar a la pagina/admin (back-offi
 ## Crear carpeta contenedora de templates
 Se crea carpeta para ir guardando los html que se creen, se recomienda en caso de tener varias aplicaciones, ir guardando en sub_carpetas para mantenerlas ordenadas.
 
-Dentro del archivo `settings.py` de la carpeta del proyecto, en la sección `TEMPLATES`, agregar dentro de los parentesis cuadrados de `"DIRS"` la dirección de la carpeta de templates quedando `[BASE_DIR / "templates"|]`
+Dentro del archivo `settings.py` de la carpeta del proyecto, en la sección `TEMPLATES`, agregar dentro de los parentesis cuadrados de `"DIRS"` la dirección de la carpeta de templates quedando `[BASE_DIR / "templates"]`
 
 
 ## Crear una aplicación
-`python manage.py startapp nombre_plantilla`
+`python manage.py startapp nombre_aplicacion`
 
 ### Crear archivo `urls.py` dentro de la aplicación.
 
@@ -73,6 +77,33 @@ path("ruta", función,  )
 En el archivo `settings.py` de la carpeta `Proyecto`, en la configuración de `INSTALLED_APPS` se agrega `"nombre_aplicacion",` (la coma final debe estar)
 
 Esto se realiza para que el proyecto sepa la existencia de la aplicación.
+
+## Crear modelos de la aplicación
+
+Dentro del archivo `models.py` perteneciente a la aplicación, se crean clases para poder trabajar con el ORM y la base de datos, Cada clase es una tabla y dentro de la clase se escriben las columnas de la tabla con las caracteristicas de los datos y sus restricciones. Ejemplo:
+
+    class Nombre_tabla(models.Model):
+        nombre_columna_1 = models.CharField("nombre_columna_1", max_length=40)
+        nombre_columna_2 = models.CharField("nombre_columna_2", max_length=40)
+
+        def __str__(self):
+            return f"{self.nombre_columna_1}"
+
+Una vez que se construye el modelo se escriben los comandos de migración visto anteriormente, este proceso se debe realizar cada vez que se crea una nueva tabla o que se modifica una tabla.
+
+## agregar modelos a carpeta de administración
+
+Primero importamos el modelo 
+
+    from .models import Nombre_tabla
+
+y agregamos la tabla como una clase
+
+    @admin.register(nombre_tabla)
+    class Nombre_tabla_Admin(admin.ModelAdmin):
+        pass
+
+Esto permite poder agregar y eliminar filas en la base de datos en el backoffice (pagina www.sdfsdf.cl/admin)
 
 ## Crear funciones de visualización en el controlador
 
@@ -108,33 +139,6 @@ En el archivo `urls.py` del proyecto se realizan las siguientes modificaciones:
             path("nombre_aplicacion", include("nombre_aplicacion.urls"))
         ]`
 
-## Crear modelos de la aplicación
-
-Dentro del archivo `models.py` perteneciente a la aplicación, se crean clases para poder trabajar con el ORM y la base de datos, Cada clase es una tabla y dentro de la clase se escriben las columnas de la tabla con las caracteristicas de los datos y sus restricciones. Ejemplo:
-
-    class Nombre_tabla(models.Model):
-        nombre_columna_1 = models.CharField("nombre_columna_1", max_length=40)
-        nombre_columna_2 = models.CharField("nombre_columna_2", max_length=40)
-
-        def __str__(self):
-            return f"{self.nombre_columna_1}"
-
-Una vez que se construye el modelo se escriben los comandos de migración visto anteriormente, este proceso se debe realizar cada vez que se crea una nueva tabla o que se modifica una tabla.
-
-## agregar modelos a carpeta de administración
-
-Primero importamos el modelo 
-
-    from .models import Nombre_tabla
-
-y agregamos la tabla como una clase
-
-    @admin.register(nombre_tabla)
-    class Nombre_tabla_Admin(admin.ModelAdmin):
-        pass
-
-Esto permite poder agregar y eliminar filas en la base de datos en el backoffice (pagina www.sdfsdf.cl/admin)
-
 ## Creando acciones adicionales en los html del template
 
 Para poder ejecutar código python en la pagina web, se debe escribir cierto codigo estructurado por `Jinja` (https://jinja.palletsprojects.com/en/stable/)
@@ -143,6 +147,9 @@ Para poder ejecutar código python en la pagina web, se debe escribir cierto cod
         {{accion.nombre_columna_1}}
     {% endfor %}
     
+    {% load statics %}
+
+    {% include 'pagina_web.html' %}
 
 
 
