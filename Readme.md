@@ -36,9 +36,12 @@ Esta es la estructura donde se hechará a andar nuestras aplicaciones
 * `wsgi.py`: Encargado de redireccionar las peticiones de los usuarios. (Servidor web embebido dentro del framework)
 
 ## Migración de modelos a tablas de la base de datos
-`python manage.py makemigrations` (prepara la migración sin crear las tablas, es decir, verifica si hay modelos que deban ser migrados)
 
-`python manage.py migrate` (aplico los modelos de django como tablas en la base de datos)
+Para realizar las migraciones se utilizan 2 comandos:
+* `python manage.py makemigrations` (prepara la migración sin crear las tablas, es decir, verifica si hay modelos que deban ser migradosde todo el proyecto y aplicaciones)
+    + Se puede escribir para cada solo realizar la migración en una aplicación y quedaria: `python manage.py makemigrations nombre_aplicacion`
+
++ `python manage.py migrate` (aplico los modelos de django como tablas en la base de datos)
 
 ## Crear la cuenta de administrador
 `python manage.py createsuperuser`
@@ -78,7 +81,7 @@ En el archivo `settings.py` de la carpeta `Proyecto`, en la configuración de `I
 
 Esto se realiza para que el proyecto sepa la existencia de la aplicación.
 
-## Crear modelos de la aplicación
+## Crear modelos de la aplicación (Primera Parte)
 
 Dentro del archivo `models.py` perteneciente a la aplicación, se crean clases para poder trabajar con el ORM y la base de datos, Cada clase es una tabla y dentro de la clase se escriben las columnas de la tabla con las caracteristicas de los datos y sus restricciones. Ejemplo:
 
@@ -152,9 +155,30 @@ Para poder ejecutar código python en la pagina web, se debe escribir cierto cod
     {% include 'pagina_web.html' %}
 
 
+## Crear modelos de la aplicación (Segunda parte)
 
+Cuando debemos trabajar con imagenes y archivos, se deben configurar ciertas acciones adicionales.
 
+Primero en el archivo de `models.py` agregamos la variable, como por ejemplo:
 
+    imagen = models.ImageField("imagen", upload_to="productos/", blank=True, null=True)
 
+Que significaría que la imagen se cargará en la carpeta "productos" y que puede ser blanco o nulo, ideal cuando se hace una modificación al modelo ya teniendo datos en el interior, así no genera error al generar la migración.
 
+Segundo, configuramos el archivo `settings.py`. 
+Al final, abajo el comando escrito de "`STATIC_URL`" se agregan:
+* `MEDIA_URL = "/media/"`  (Esto es lo que se ve en la url al ver la imagen/archivo)
+* `MEDIA_ROOT = BASE_DIR / "media"` (De donde irá a buscar la imagen/archivo)
+
+Tercero, configuramos la dirección a utilizar durante el periodo de desarrollo o de "debug" en el archivo `urls.py` del proyecto. Para lo cual primero se importan:
+
+* `from django.conf.urls.static import static`
+* `from django.conf import settings`
+
+Ahora en el mismo archivo, al final se agrega:
+
+    if settings.DEBUG:
+        urlpatterns += static(settings.MEDIA_URL, document_root=MEDIA_ROOT)
+
+Ya teniendo los archivos modificados y el modelo modificado, se vuelve a migrar el modelo con los comandos `makemigrations` y `migrate`.
 
