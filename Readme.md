@@ -182,3 +182,61 @@ Ahora en el mismo archivo, al final se agrega:
 
 Ya teniendo los archivos modificados y el modelo modificado, se vuelve a migrar el modelo con los comandos `makemigrations` y `migrate`.
 
+## Creando El CRUD (Create, Read, Update, Delete) para cada modelo
+
+Este proceso puede ser por medio de funciones o de clases, a continuación trabajaremos con clases, en el archivo `views.py` de la aplicación.
+
+### Leer
+
+Se importa `from django.views.generic import ListView` y se agrega la clase para la lectura que hereda de `ListView`
+
+    class Nombre_ModeloListView(ListView):
+        model = Nombre_del_modelo_que_se_listara
+        template_name = "plantilla_que_renderiza_el_listado_de_items_del_modelo.html"
+        context_object_name = "nombre_de_contenido_o_modelo"
+
+### Detallar
+
+Se importa `from django.views.generic import DetailView` y se agrega la clase para detalle que hereda de `DetailView`
+
+    class Nombre_ModeloDetailView(DetailView):
+        model = Nombre_del_modelo_que_se_detallara
+        template_name = "plantilla_que_renderiza_el_detalle_del_articulo_del_modelo.html"
+        context_object_name = "nombre_de_contenido_o_modelo"
+
+### Crear
+
+Se importa `from django.views.generic import CreateView` y `from django.urls import reverse_lazy` y se agrega la clase para crear que hereda de `CreateView`
+
+    class Nombre_ModeloDCreateView(CreateView):
+        model = Nombre_del_modelo_que_se_detallara
+        template_name = "plantilla_con formulario_para agregar_información_al_modelo.html"
+        field = ['Variables','del','modelo','que se','necesita','ingresar']
+        success_url = reverse_lazy("pagina_donde_se_redirige_una_vez_que_se_completa_la_tarea")
+
+### Actualizar
+
+Se importa `from django.views.generic import UpdateView` y `from django.urls import reverse_lazy` y se agrega la clase para detalle que hereda de `UpdateView`
+
+    class Nombre_ModeloUpdateView(UpdateView):
+        model = Nombre_del_modelo_que_se_actualizara
+        template_name = "plantilla_con formulario_para agregar_información_al_modelo.html"
+        field = ['Variables','del','modelo','que se','necesita','ingresar']
+        success_url = reverse_lazy("pagina_donde_se_redirige_una_vez_que_se_completa_la_tarea") 
+
+### Borrar
+
+Se importa `from django.views.generic import DeleteView` y `from django.urls import reverse_lazy` el que me permite redirigir a una pagina después que la acción se complete y se agrega la clase para detalle que hereda de `DeleteView`
+
+    class Nombre_ModeloDeleteView(DeleteView):
+        model = Nombre_del_modelo_que_se_detallara
+        template_name = "plantilla_que_renderiza_la confirmacion_de_borrar_item_d el_modelo.html"
+        success_url = reverse_lazy("pagina_donde_se_redirige_una_vez_que_se_completa_la_tarea")
+
+
+Una vez creadas las clases, se crean los templates necesarios para realizar las tareas del CRUD. Como con todo HTML nuevo, se debe realizar la conexión de las templates creadas con el archivo `urls.py` de la aplicación. 
+
+En este archivo se debe importar las clases del CRUD desde `.views` y la path de las estas clases se agrega `.as_view()`, quedando:
+
+    path("direccion/", Nombre_ClaseListView.as_view(), name="lista_items"),
+
